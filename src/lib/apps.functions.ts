@@ -182,7 +182,11 @@ export const updateAppAsAdmin = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await adminClient(context);
 
-    const { id, ...patch } = data;
+    const { id, ...rest } = data;
+    const patch: Record<string, string | number | boolean> = {};
+    for (const [key, value] of Object.entries(rest)) {
+      if (value !== undefined) patch[key] = value;
+    }
     if (Object.keys(patch).length === 0) return { ok: true };
 
     const { error } = await context.supabase.from("apps").update(patch).eq("id", id);

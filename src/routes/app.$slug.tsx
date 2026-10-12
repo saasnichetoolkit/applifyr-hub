@@ -46,8 +46,9 @@ export const Route = createFileRoute("/app/$slug")({
   component: AppDetail,
 });
 
-function AppDetail({ params }: { params: { slug: string } }) {
-  const { data: app } = useSuspenseQuery(appBySlugQuery(params.slug));
+function AppDetail() {
+  const { slug } = Route.useParams();
+  const { data: app } = useSuspenseQuery(appBySlugQuery(slug));
 
   if (!app) {
     return (

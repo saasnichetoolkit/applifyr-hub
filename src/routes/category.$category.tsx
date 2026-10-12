@@ -31,14 +31,15 @@ export const Route = createFileRoute("/category/$category")({
   component: CategoryPage,
 });
 
-function CategoryPage({ params }: { params: { category: string } }) {
+function CategoryPage() {
+  const { category } = Route.useParams();
   const { data: apps } = useSuspenseQuery(approvedAppsQuery);
-  const known = isKnownCategory(params.category);
-  const label = categoryLabel(params.category);
+  const known = isKnownCategory(category);
+  const label = categoryLabel(category);
 
   const inCategory = useMemo(
-    () => apps.filter((app) => app.category === params.category),
-    [apps, params.category],
+    () => apps.filter((app) => app.category === category),
+    [apps, category],
   );
 
   if (!known) {
