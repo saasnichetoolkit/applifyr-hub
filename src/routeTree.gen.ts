@@ -12,6 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as ExploreRouteImport } from './routes/explore'
+import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as SubmitRouteImport } from './routes/submit'
+import { Route as AppSlugRouteImport } from './routes/app.$slug'
+import { Route as CategoryCategoryRouteImport } from './routes/category.$category'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +32,93 @@ const ExploreRoute = ExploreRouteImport.update({
   path: '/explore',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignInRoute = SignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubmitRoute = SubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppSlugRoute = AppSlugRouteImport.update({
+  id: '/app/$slug',
+  path: '/app/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoryCategoryRoute = CategoryCategoryRouteImport.update({
+  id: '/category/$category',
+  path: '/category/$category',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/categories': typeof CategoriesRoute
   '/explore': typeof ExploreRoute
+  '/sign-in': typeof SignInRoute
+  '/submit': typeof SubmitRoute
+  '/app/$slug': typeof AppSlugRoute
+  '/category/$category': typeof CategoryCategoryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/categories': typeof CategoriesRoute
   '/explore': typeof ExploreRoute
+  '/sign-in': typeof SignInRoute
+  '/submit': typeof SubmitRoute
+  '/app/$slug': typeof AppSlugRoute
+  '/category/$category': typeof CategoryCategoryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/categories': typeof CategoriesRoute
   '/explore': typeof ExploreRoute
+  '/sign-in': typeof SignInRoute
+  '/submit': typeof SubmitRoute
+  '/app/$slug': typeof AppSlugRoute
+  '/category/$category': typeof CategoryCategoryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/categories' | '/explore'
+  fullPaths:
+    | '/'
+    | '/categories'
+    | '/explore'
+    | '/sign-in'
+    | '/submit'
+    | '/app/$slug'
+    | '/category/$category'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/categories' | '/explore'
-  id: '__root__' | '/' | '/categories' | '/explore'
+  to:
+    | '/'
+    | '/categories'
+    | '/explore'
+    | '/sign-in'
+    | '/submit'
+    | '/app/$slug'
+    | '/category/$category'
+  id:
+    | '__root__'
+    | '/'
+    | '/categories'
+    | '/explore'
+    | '/sign-in'
+    | '/submit'
+    | '/app/$slug'
+    | '/category/$category'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CategoriesRoute: typeof CategoriesRoute
   ExploreRoute: typeof ExploreRoute
+  SignInRoute: typeof SignInRoute
+  SubmitRoute: typeof SubmitRoute
+  AppSlugRoute: typeof AppSlugRoute
+  CategoryCategoryRoute: typeof CategoryCategoryRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +144,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sign-in': {
+      id: '/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/submit': {
+      id: '/submit'
+      path: '/submit'
+      fullPath: '/submit'
+      preLoaderRoute: typeof SubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/$slug': {
+      id: '/app/$slug'
+      path: '/app/$slug'
+      fullPath: '/app/$slug'
+      preLoaderRoute: typeof AppSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/category/$category': {
+      id: '/category/$category'
+      path: '/category/$category'
+      fullPath: '/category/$category'
+      preLoaderRoute: typeof CategoryCategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +179,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CategoriesRoute: CategoriesRoute,
   ExploreRoute: ExploreRoute,
+  SignInRoute: SignInRoute,
+  SubmitRoute: SubmitRoute,
+  AppSlugRoute: AppSlugRoute,
+  CategoryCategoryRoute: CategoryCategoryRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
