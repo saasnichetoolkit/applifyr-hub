@@ -1,4 +1,6 @@
 import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 import {
   createContext,
   useCallback,
@@ -34,6 +36,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const fetchAdmin = useServerFn(checkAdminAccess);
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     let active = true;
@@ -44,10 +48,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setReady(true);
     });
 
-    const { data: subscription } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data: subscription } = supabase.auth.onAuthStateChange((event, nextSession) => {
       if (!active) return;
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       setSession(nextSession ?? null);
       setReady(true);
+      router.invalidate();
+      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
     });
 
     return () => {
