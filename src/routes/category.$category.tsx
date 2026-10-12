@@ -50,7 +50,7 @@ function CategoryPage() {
           No such category
         </h1>
         <p className="mt-4 text-sm text-muted-foreground">
-          “{params.category}” isn't one of the directory categories.
+          “{category}” isn't one of the directory categories.
         </p>
         <Button asChild className="mt-8 rounded-md">
           <a href="/categories">All categories</a>

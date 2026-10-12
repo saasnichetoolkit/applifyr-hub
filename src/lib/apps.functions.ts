@@ -163,6 +163,18 @@ export const listAdminApps = createServerFn({ method: "POST" })
     return (data ?? []) as DirectoryApp[];
   });
 
+type AppUpdate = {
+  status?: "pending" | "approved" | "featured" | "rejected";
+  is_featured?: boolean;
+  is_verified?: boolean;
+  title?: string;
+  tagline?: string;
+  description?: string;
+  website_url?: string;
+  category?: string;
+  rating?: number;
+};
+
 const adminUpdateSchema = z.object({
   id: z.string().uuid(),
   status: z.enum(["pending", "approved", "featured", "rejected"]).optional(),
@@ -183,10 +195,9 @@ export const updateAppAsAdmin = createServerFn({ method: "POST" })
     await adminClient(context);
 
     const { id, ...rest } = data;
-    const patch: Record<string, string | number | boolean> = {};
-    for (const [key, value] of Object.entries(rest)) {
-      if (value !== undefined) patch[key] = value;
-    }
+    const patch = Object.fromEntries(
+      Object.entries(rest).filter(([, value]) => value !== undefined),
+    ) as AppUpdate;
     if (Object.keys(patch).length === 0) return { ok: true };
 
     const { error } = await context.supabase.from("apps").update(patch).eq("id", id);
