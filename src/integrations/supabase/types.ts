@@ -14,94 +14,13 @@ export type Database = {
   }
   public: {
     Tables: {
-      admin_email_allowlist: {
-        Row: {
-          email: string
-        }
-        Insert: {
-          email: string
-        }
-        Update: {
-          email?: string
-        }
-        Relationships: []
-      }
-      apps: {
-        Row: {
-          category: string | null
-          created_at: string
-          description: string | null
-          id: string
-          is_featured: boolean
-          is_verified: boolean
-          rating: number | null
-          slug: string
-          source: string | null
-          source_id: string | null
-          status: string
-          tagline: string | null
-          title: string
-          website_url: string | null
-        }
-        Insert: {
-          category?: string | null
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_featured?: boolean
-          is_verified?: boolean
-          rating?: number | null
-          slug: string
-          source?: string | null
-          source_id?: string | null
-          status?: string
-          tagline?: string | null
-          title: string
-          website_url?: string | null
-        }
-        Update: {
-          category?: string | null
-          created_at?: string
-          description?: string | null
-          id?: string
-          is_featured?: boolean
-          is_verified?: boolean
-          rating?: number | null
-          slug?: string
-          source?: string | null
-          source_id?: string | null
-          status?: string
-          tagline?: string | null
-          title?: string
-          website_url?: string | null
-        }
-        Relationships: []
-      }
-      user_roles: {
-        Row: {
-          id: string
-          role: string
-          user_id: string
-        }
-        Insert: {
-          id?: string
-          role: string
-          user_id: string
-        }
-        Update: {
-          id?: string
-          role?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      claim_admin_access: { Args: never; Returns: boolean }
-      has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
