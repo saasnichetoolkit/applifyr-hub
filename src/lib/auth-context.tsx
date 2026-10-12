@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       active = false;
       subscription.subscription.unsubscribe();
     };
-  }, []);
+  }, [router, queryClient]);
 
   useEffect(() => {
     let active = true;
