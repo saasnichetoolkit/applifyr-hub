@@ -51,7 +51,7 @@ async function collectApprovedApps(origin: string) {
   return urls;
 }
 
-export const Route = createFileRoute("/sitemap[.]xml")({
+export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async ({ request }) => {
