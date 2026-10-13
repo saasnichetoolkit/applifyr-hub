@@ -79,13 +79,18 @@ function AppDetail() {
       </a>
 
       <div className="mt-6 flex flex-wrap items-start justify-between gap-6">
-        <div>
+        <div className="flex items-start gap-5">
+          {app.icon_url ? (
+            <img src={app.icon_url} alt={`${app.title} icon`} className="size-16 shrink-0 rounded-2xl border border-border object-cover md:size-20" />
+          ) : null}
+          <div>
           <h1 className="font-display text-4xl leading-tight font-bold tracking-tight text-foreground md:text-5xl">
             {app.title}
           </h1>
           <p className="mt-3 max-w-2xl text-lg leading-relaxed text-muted-foreground">
             {app.tagline}
           </p>
+          </div>
         </div>
         <div className="rounded-xl border border-accent/30 bg-accent/10 px-5 py-4 text-center">
           <p className="font-mono text-3xl font-medium text-accent tabular-nums">
@@ -112,6 +117,14 @@ function AppDetail() {
           </Badge>
         ) : null}
       </div>
+
+      {app.screenshot_urls?.length ? (
+        <div className="mt-10 grid gap-4 sm:grid-cols-2">
+          {app.screenshot_urls.map((url) => (
+            <img key={url} src={url} alt={`${app.title} screenshot`} loading="lazy" className="aspect-video w-full rounded-xl border border-border/70 object-cover" />
+          ))}
+        </div>
+      ) : null}
 
       <div className="mt-10 rounded-xl border border-border/70 bg-card/60 p-6 md:p-8">
         <p className="label-mono text-muted-foreground">About</p>

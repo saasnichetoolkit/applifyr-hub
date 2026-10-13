@@ -19,9 +19,12 @@ export function AppCard({ app, className }: { app: DirectoryApp; className?: str
       )}
     >
       <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
+        {app.icon_url ? <img src={app.icon_url} alt="" loading="lazy" className="size-10 shrink-0 rounded-lg border border-border object-cover" /> : null}
         <h3 className="font-display text-lg leading-snug font-semibold text-foreground">
           {app.title}
         </h3>
+        </div>
         <span className="shrink-0 rounded-md border border-accent/30 bg-accent/10 px-1.5 py-0.5 font-mono text-xs font-medium text-accent">
           {rating.toFixed(1)}
         </span>

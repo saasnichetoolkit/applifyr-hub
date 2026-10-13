@@ -4,7 +4,9 @@ import { queryOptions } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Check, LogOut, Star, X } from "lucide-react";
+import { Check, LogOut, Search, Star, X } from "lucide-react";
+import { AutofillPanel } from "@/components/autofill-panel";
+import { IconField, ScreenshotsField } from "@/components/image-fields";
 
 import {
   checkAdminAccess,
@@ -42,6 +44,7 @@ const adminAppsQuery = queryOptions({
 });
 
 const TABS = [
+  { value: "all", label: "All" },
   { value: "pending", label: "Pending" },
   { value: "approved", label: "Approved" },
   { value: "featured", label: "Featured" },
@@ -76,6 +79,18 @@ export const Route = createFileRoute("/_authenticated/admin")({
 function Admin() {
   const { data: apps } = useSuspenseQuery(adminAppsQuery);
   const [tab, setTab] = useState<TabValue>("pending");
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("all");
+  const q = query.trim().toLowerCase();
+  const matches = apps.filter(
+    (app) =>
+      (category === "all" || app.category === category) &&
+      (!q ||
+        [app.title, app.tagline, app.description, app.website_url, app.slug, categoryLabel(app.category)]
+          .filter(Boolean)
+          .some((v) => String(v).toLowerCase().includes(q))),
+  );
+  const inTab = (value: TabValue) => matches.filter((app) => value === "all" || app.status === value);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-12">
@@ -89,13 +104,39 @@ function Admin() {
         <SignOut />
       </div>
 
-      <Tabs value={tab} onValueChange={(value) => setTab(value as TabValue)} className="mt-10">
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div className="relative flex-1">
+          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search name, tagline, website…"
+            aria-label="Search listings"
+            className="bg-card pl-9"
+          />
+        </div>
+        <Select value={category} onValueChange={setCategory}>
+          <SelectTrigger className="w-full bg-card sm:w-64" aria-label="Filter by category">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All categories</SelectItem>
+            {CATEGORIES.map((c) => (
+              <SelectItem key={c.slug} value={c.slug}>
+                {c.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <Tabs value={tab} onValueChange={(value) => setTab(value as TabValue)} className="mt-6">
         <TabsList className="flex-wrap">
           {TABS.map((item) => (
             <TabsTrigger key={item.value} value={item.value}>
               {item.label}
               <span className="ml-2 font-mono text-xs text-muted-foreground tabular-nums">
-                {apps.filter((app) => app.status === item.value).length}
+                {inTab(item.value).length}
               </span>
             </TabsTrigger>
           ))}
@@ -103,7 +144,7 @@ function Admin() {
 
         {TABS.map((item) => (
           <TabsContent key={item.value} value={item.value} className="mt-6">
-            <AppTable apps={apps.filter((app) => app.status === item.value)} />
+            <AppTable apps={inTab(item.value)} />
           </TabsContent>
         ))}
       </Tabs>
@@ -146,6 +187,10 @@ function AppTable({ apps }: { apps: DirectoryApp[] }) {
     <div className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border/70 bg-card/60">
       {apps.map((app) => (
         <div key={app.id} className="flex flex-wrap items-center justify-between gap-4 p-5">
+          <div className="flex min-w-0 items-center gap-4">
+          <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-background">
+            {app.icon_url ? <img src={app.icon_url} alt="" className="size-full object-cover" /> : <span className="font-display text-lg text-muted-foreground">{app.title[0]}</span>}
+          </div>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <p className="font-display text-base font-semibold text-foreground">{app.title}</p>
@@ -164,6 +209,7 @@ function AppTable({ apps }: { apps: DirectoryApp[] }) {
                 year: "numeric",
               })}
             </p>
+          </div>
           </div>
           <AppDialog app={app} />
         </div>
@@ -184,6 +230,8 @@ function AppDialog({ app }: { app: DirectoryApp }) {
     category: app.category ?? "other",
     rating: String(app.rating ?? ""),
     is_verified: app.is_verified,
+    icon_url: app.icon_url ?? "",
+    screenshot_urls: app.screenshot_urls ?? [],
   }));
 
   const save = useMutation({
@@ -196,7 +244,7 @@ function AppDialog({ app }: { app: DirectoryApp }) {
     onError: (error: Error) => toast.error(error.message),
   });
 
-  function patch(field: keyof typeof edit, value: string | boolean) {
+  function patch(field: keyof typeof edit, value: string | boolean | string[]) {
     setEdit((current) => ({ ...current, [field]: value }));
   }
 
@@ -219,6 +267,22 @@ function AppDialog({ app }: { app: DirectoryApp }) {
         </DialogHeader>
 
         <div className="space-y-5">
+          <AutofillPanel
+            url={edit.website_url}
+            onSuggest={(s) =>
+              setEdit((c) => ({
+                ...c,
+                title: s.title,
+                tagline: s.tagline,
+                description: s.description,
+                category: s.category,
+                icon_url: c.icon_url || s.icon_url || "",
+                screenshot_urls: c.screenshot_urls.length || !s.screenshot_url ? c.screenshot_urls : [s.screenshot_url],
+              }))
+            }
+          />
+          <IconField id={`icon-${app.id}`} value={edit.icon_url} onChange={(v) => patch("icon_url", v)} />
+          <ScreenshotsField value={edit.screenshot_urls} onChange={(v) => patch("screenshot_urls", v)} />
           <div className="space-y-2">
             <Label htmlFor={`title-${app.id}`}>Title</Label>
             <Input
@@ -321,6 +385,8 @@ function AppDialog({ app }: { app: DirectoryApp }) {
                 category: edit.category,
                 rating: edit.rating === "" ? undefined : Number(edit.rating),
                 is_verified: edit.is_verified,
+                icon_url: edit.icon_url.trim(),
+                screenshot_urls: edit.screenshot_urls,
               })
             }
           >
