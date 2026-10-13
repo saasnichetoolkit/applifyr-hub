@@ -7,8 +7,8 @@ export type SubmissionInput = {
   description: string;
   website_url: string;
   category: string;
-  icon_url?: string | null;
-  screenshot_urls?: string[];
+  icon_url?: string | null | undefined;
+  screenshot_urls?: string[] | undefined;
 };
 
 export function slugify(title: string): string {
