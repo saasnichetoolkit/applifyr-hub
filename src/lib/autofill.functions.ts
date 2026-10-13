@@ -85,7 +85,7 @@ const schema = {
 };
 
 async function askModel(content: unknown[]) {
-  const key = process.env.LOVABLE_API_KEY;
+  const key = process.env["LOVABLE_API_KEY"];
   if (!key) throw new Error("The auto-fill service isn't configured.");
 
   const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {

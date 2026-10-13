@@ -55,8 +55,11 @@ export function AutofillPanel({ url, onSuggest }: Props) {
             const file = event.target.files?.[0];
             event.target.value = "";
             if (!file) return;
-            if (file.size > 4 * 1024 * 1024) return toast.error("Use an image under 4 MB.");
-            run(await fileToDataUrl(file));
+            if (file.size > 4 * 1024 * 1024) {
+              toast.error("Use an image under 4 MB.");
+              return;
+            }
+            await run(await fileToDataUrl(file));
           }}
         />
         <Button type="button" size="sm" variant="outline" className="rounded-md" disabled={busy} onClick={() => fileRef.current?.click()}>
