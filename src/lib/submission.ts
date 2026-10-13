@@ -7,6 +7,8 @@ export type SubmissionInput = {
   description: string;
   website_url: string;
   category: string;
+  icon_url?: string | null;
+  screenshot_urls?: string[];
 };
 
 export function slugify(title: string): string {
@@ -20,7 +22,16 @@ export function slugify(title: string): string {
   return base || "app";
 }
 
-export type SubmissionRow = SubmissionInput & {
+export const MAX_SCREENSHOTS = 6;
+
+export type SubmissionRow = {
+  title: string;
+  tagline: string;
+  description: string;
+  website_url: string;
+  category: string;
+  icon_url: string | null;
+  screenshot_urls: string[];
   slug: string;
   status: "pending";
   is_featured: false;
@@ -38,6 +49,8 @@ export function submissionRow(input: SubmissionInput, slug: string): SubmissionR
     description: input.description,
     website_url: input.website_url,
     category: input.category,
+    icon_url: input.icon_url || null,
+    screenshot_urls: (input.screenshot_urls ?? []).slice(0, MAX_SCREENSHOTS),
     slug,
     status: "pending",
     is_featured: false,

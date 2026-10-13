@@ -42,3 +42,12 @@ describe("Public submissions", () => {
     expect(slugify("  ")).toBe("app");
   });
 });
+
+describe("Submission images", () => {
+  it("keeps at most 6 screenshots and stores a missing icon as empty", () => {
+    const urls = Array.from({ length: 9 }, (_, i) => `https://x.com/${i}.png`);
+    const row = submissionRow({ ...input, screenshot_urls: urls, icon_url: "" }, "x");
+    expect(row.screenshot_urls).toHaveLength(6);
+    expect(row.icon_url).toBeNull();
+  });
+});

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { submitApp } from "@/lib/apps.functions";
+import { AutofillPanel } from "@/components/autofill-panel";
+import { IconField, ScreenshotsField } from "@/components/image-fields";
 import { CATEGORIES } from "@/lib/categories";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,7 +42,12 @@ export const Route = createFileRoute("/submit")({
 
 function Submit() {
   const send = useServerFn(submitApp);
+  const empty = { title: "", website_url: "", tagline: "", description: "", icon_url: "" };
+  const [fields, setFields] = useState(empty);
+  const [screenshots, setScreenshots] = useState<string[]>([]);
   const [category, setCategory] = useState<string>("");
+  const set = (k: keyof typeof empty) => (e: { target: { value: string } }) =>
+    setFields((f) => ({ ...f, [k]: e.target.value }));
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -48,12 +55,10 @@ function Submit() {
     event.preventDefault();
     if (pending) return;
 
-    const form = new FormData(event.currentTarget);
     const payload = {
-      website_url: String(form.get("website_url") ?? ""),
-      title: String(form.get("title") ?? ""),
-      tagline: String(form.get("tagline") ?? ""),
-      description: String(form.get("description") ?? ""),
+      ...fields,
+      icon_url: fields.icon_url.trim() || null,
+      screenshot_urls: screenshots,
       category,
     };
 
@@ -95,6 +100,8 @@ function Submit() {
             onClick={() => {
               setDone(false);
               setCategory("");
+              setFields(empty);
+              setScreenshots([]);
             }}
           >
             Submit another
@@ -111,13 +118,13 @@ function Submit() {
         Tell us what you built
       </h1>
       <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-        Five fields, no account needed. Submissions stay hidden until an editor approves them.
+        Paste your link and let auto-fill draft the details, then check them. No account needed. Submissions stay hidden until an editor approves them.
       </p>
 
       <form onSubmit={onSubmit} className="mt-10 space-y-6">
         <div className="space-y-2">
           <Label htmlFor="title">App name</Label>
-          <Input id="title" name="title" required maxLength={120} placeholder="Book Launch Desk" />
+          <Input id="title" name="title" value={fields.title} onChange={set("title")} required maxLength={120} placeholder="Book Launch Desk" />
         </div>
 
         <div className="space-y-2">
@@ -125,17 +132,36 @@ function Submit() {
           <Input
             id="website_url"
             name="website_url"
+            value={fields.website_url}
+            onChange={set("website_url")}
             type="url"
             required
             placeholder="https://example.com"
           />
         </div>
 
+        <AutofillPanel
+          url={fields.website_url}
+          onSuggest={(s) => {
+            setFields((f) => ({
+              ...f,
+              title: s.title,
+              tagline: s.tagline,
+              description: s.description,
+              icon_url: f.icon_url || s.icon_url || "",
+            }));
+            setCategory(s.category);
+            if (s.screenshot_url && screenshots.length === 0) setScreenshots([s.screenshot_url]);
+          }}
+        />
+
         <div className="space-y-2">
           <Label htmlFor="tagline">Tagline</Label>
           <Input
             id="tagline"
             name="tagline"
+            value={fields.tagline}
+            onChange={set("tagline")}
             required
             minLength={8}
             maxLength={160}
@@ -164,6 +190,8 @@ function Submit() {
           <Textarea
             id="description"
             name="description"
+            value={fields.description}
+            onChange={set("description")}
             required
             minLength={40}
             maxLength={4000}
@@ -174,6 +202,9 @@ function Submit() {
             Between 40 and 4,000 characters. Plain text reads best here.
           </p>
         </div>
+
+        <IconField id="icon_url" value={fields.icon_url} onChange={(v) => setFields((f) => ({ ...f, icon_url: v }))} />
+        <ScreenshotsField value={screenshots} onChange={setScreenshots} />
 
         <Button type="submit" size="lg" disabled={pending} className="w-full rounded-md">
           {pending ? "Sending…" : "Submit for review"}

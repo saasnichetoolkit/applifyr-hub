@@ -3,9 +3,10 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { CATEGORY_SLUGS } from "@/lib/categories";
+import { MAX_SCREENSHOTS, slugify, submissionRow } from "@/lib/submission";
 
 export const APP_FIELDS =
-  "id, title, slug, tagline, description, website_url, rating, category, is_featured, is_verified, status, created_at";
+  "id, title, slug, tagline, description, website_url, rating, category, is_featured, is_verified, status, created_at, icon_url, screenshot_urls";
 
 export type DirectoryApp = {
   id: string;
@@ -20,18 +21,9 @@ export type DirectoryApp = {
   is_verified: boolean;
   status: string;
   created_at: string;
+  icon_url: string | null;
+  screenshot_urls: string[];
 };
-
-function slugify(title: string): string {
-  const base = title
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
-  return base || "app";
-}
 
 async function adminClient(context: { supabase: any; userId: string }) {
   const { data, error } = await context.supabase.rpc("has_role", {
@@ -82,6 +74,8 @@ export const getAppBySlug = createServerFn({ method: "GET" })
 
 // ---------- public submission ----------
 
+const imageUrl = z.string().trim().url().max(1000).refine((v) => /^https?:\/\//i.test(v));
+
 const submitSchema = z.object({
   title: z.string().trim().min(2).max(120),
   tagline: z.string().trim().min(8).max(160),
@@ -93,6 +87,8 @@ const submitSchema = z.object({
     .max(500)
     .refine((value) => /^https?:\/\//i.test(value), "The web address must start with http or https"),
   category: z.string().refine((value) => CATEGORY_SLUGS.includes(value), "Choose one of the listed categories"),
+  icon_url: imageUrl.nullable().optional(),
+  screenshot_urls: z.array(imageUrl).max(MAX_SCREENSHOTS).optional(),
 });
 
 export const submitApp = createServerFn({ method: "POST" })
@@ -105,19 +101,7 @@ export const submitApp = createServerFn({ method: "POST" })
     // The row is never read back: it is pending and hidden until an admin approves it.
     for (let attempt = 0; attempt < 6; attempt += 1) {
       const slug = attempt === 0 ? base : `${base}-${attempt + 1}`;
-      const { error } = await supabase.from("apps").insert({
-        title: data.title,
-        slug,
-        tagline: data.tagline,
-        description: data.description,
-        website_url: data.website_url,
-        category: data.category,
-        status: "pending",
-        is_featured: false,
-        is_verified: false,
-        source: "submit_form",
-        source_id: null,
-      });
+      const { error } = await supabase.from("apps").insert(submissionRow(data, slug));
 
       if (!error) return { ok: true, slug };
       if (error.code !== "23505") throw new Error(error.message);
@@ -173,6 +157,8 @@ type AppUpdate = {
   website_url?: string;
   category?: string;
   rating?: number;
+  icon_url?: string | null;
+  screenshot_urls?: string[];
 };
 
 const adminUpdateSchema = z.object({
@@ -186,6 +172,8 @@ const adminUpdateSchema = z.object({
   website_url: z.string().trim().url().max(500).optional(),
   category: z.string().refine((value) => CATEGORY_SLUGS.includes(value)).optional(),
   rating: z.coerce.number().min(0).max(10).optional(),
+  icon_url: z.union([imageUrl, z.literal("").transform(() => null)]).nullable().optional(),
+  screenshot_urls: z.array(imageUrl).max(MAX_SCREENSHOTS).optional(),
 });
 
 export const updateAppAsAdmin = createServerFn({ method: "POST" })
