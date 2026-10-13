@@ -31,10 +31,12 @@ export type Database = {
           category: string | null
           created_at: string
           description: string | null
+          icon_url: string | null
           id: string
           is_featured: boolean
           is_verified: boolean
           rating: number | null
+          screenshot_urls: string[]
           slug: string
           source: string | null
           source_id: string | null
@@ -47,10 +49,12 @@ export type Database = {
           category?: string | null
           created_at?: string
           description?: string | null
+          icon_url?: string | null
           id?: string
           is_featured?: boolean
           is_verified?: boolean
           rating?: number | null
+          screenshot_urls?: string[]
           slug: string
           source?: string | null
           source_id?: string | null
@@ -63,10 +67,12 @@ export type Database = {
           category?: string | null
           created_at?: string
           description?: string | null
+          icon_url?: string | null
           id?: string
           is_featured?: boolean
           is_verified?: boolean
           rating?: number | null
+          screenshot_urls?: string[]
           slug?: string
           source?: string | null
           source_id?: string | null
