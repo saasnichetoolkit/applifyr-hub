@@ -199,8 +199,8 @@ function Index() {
         <div className="glow-aqua rounded-2xl border border-border/70 bg-card/60 p-8 md:p-12">
           <p className="label-mono text-accent">For builders</p>
           <h2 className="mt-3 max-w-2xl font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-            Built an app or tool that people need, or that solves a common problem — that has
-            yet to be noticed?
+            Built an app/tool that people need, or that solves a common problem — that has yet
+            to be noticed?
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
             Send it in. Every submission lands in a review queue and gets read before it appears —
