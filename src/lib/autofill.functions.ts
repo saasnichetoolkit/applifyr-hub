@@ -39,7 +39,7 @@ function absolute(href: string | null, base: string): string | null {
   }
 }
 
-async function readPage(url: string) {
+export async function readPage(url: string) {
   const res = await fetch(url, {
     headers: { "User-Agent": "Mozilla/5.0 (compatible; ApplifyrBot/1.0)", Accept: "text/html" },
     redirect: "follow",
