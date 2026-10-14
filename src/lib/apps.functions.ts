@@ -103,7 +103,11 @@ export const submitApp = createServerFn({ method: "POST" })
       const slug = attempt === 0 ? base : `${base}-${attempt + 1}`;
       const { error } = await supabase.from("apps").insert(submissionRow(data, slug));
 
-      if (!error) return { ok: true, slug };
+      if (!error) {
+        const { autoReviewApp } = await import("@/lib/auto-review.server");
+        const status = await autoReviewApp(slug).catch(() => null);
+        return { ok: true, slug, status: status ?? "pending" };
+      }
       if (error.code !== "23505") throw new Error(error.message);
     }
 

@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Submissions are AI-reviewed inline in submitApp (src/lib/auto-review.server.ts); no Edge Functions, since this TanStack app keeps backend logic in server functions.
