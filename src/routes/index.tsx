@@ -215,7 +215,7 @@ function Index() {
             </Button>
             <span className="inline-flex items-center gap-1.5 font-mono text-xs tracking-wider text-muted-foreground uppercase">
               <BadgeCheck className="size-3.5 text-accent" />
-              Reviewed automatically
+              Reviewed by a human
             </span>
           </div>
         </div>
