@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Submissions are AI-reviewed inline in submitApp (src/lib/auto-review.server.ts); no Edge Functions, since this TanStack app keeps backend logic in server functions.
+- Automatic AI review (src/lib/auto-review.server.ts) is paused; submitApp leaves rows pending for manual admin review — re-enable by calling autoReviewApp after insert.
