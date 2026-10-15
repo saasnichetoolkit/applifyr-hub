@@ -104,9 +104,9 @@ export const submitApp = createServerFn({ method: "POST" })
       const { error } = await supabase.from("apps").insert(submissionRow(data, slug));
 
       if (!error) {
-        const { autoReviewApp } = await import("@/lib/auto-review.server");
-        const status = await autoReviewApp(slug).catch(() => null);
-        return { ok: true, slug, status: status ?? "pending" };
+        // Automatic AI review is paused: submissions wait in Pending for manual review.
+        // To re-enable, call autoReviewApp(slug) from "@/lib/auto-review.server" here.
+        return { ok: true, slug, status: "pending" };
       }
       if (error.code !== "23505") throw new Error(error.message);
     }
