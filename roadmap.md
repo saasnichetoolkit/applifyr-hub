@@ -12,6 +12,9 @@
 - [x] Sitemap.xml + per-page SEO metadata
 - [x] Tests: submission stays pending + routing
 
+- [x] Submitter area: sign in, submit, My apps status page linking to public listings
+
 ## Open
+- [ ] My apps page verified while signed in — needs a real Google sign-in
 - [ ] Admin queue verified end-to-end in a browser — blocked: needs a real Google sign-in by the allowlisted account (email sign-ups are off, so no test reviewer can be created)
 - [ ] Confirm the three seed apps' real names, links and blurbs with Michael (currently best-guess copy)

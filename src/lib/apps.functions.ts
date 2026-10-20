@@ -114,6 +114,36 @@ export const submitApp = createServerFn({ method: "POST" })
     throw new Error("That app name is already taken. Try a slightly different title.");
   });
 
+// ---------- signed-in submitters ----------
+
+export const submitMyApp = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => submitSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const base = slugify(data.title);
+    for (let attempt = 0; attempt < 6; attempt += 1) {
+      const slug = attempt === 0 ? base : `${base}-${attempt + 1}`;
+      const { error } = await context.supabase
+        .from("apps")
+        .insert({ ...submissionRow(data, slug), submitted_by: context.userId } as never);
+      if (!error) return { ok: true, slug, status: "pending" };
+      if (error.code !== "23505") throw new Error(error.message);
+    }
+    throw new Error("That app name is already taken. Try a slightly different title.");
+  });
+
+export const listMyApps = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("apps")
+      .select(APP_FIELDS)
+      .eq("submitted_by" as never, context.userId)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as unknown as DirectoryApp[];
+  });
+
 // ---------- auth helpers ----------
 
 export const claimAdminAccess = createServerFn({ method: "POST" })

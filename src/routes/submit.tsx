@@ -3,7 +3,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { submitApp } from "@/lib/apps.functions";
+import { Link } from "@tanstack/react-router";
+import { submitApp, submitMyApp } from "@/lib/apps.functions";
+import { useAuth } from "@/lib/auth-context";
 import { AutofillPanel } from "@/components/autofill-panel";
 import { IconField, ScreenshotsField } from "@/components/image-fields";
 import { CATEGORIES } from "@/lib/categories";
@@ -41,7 +43,10 @@ export const Route = createFileRoute("/submit")({
 });
 
 function Submit() {
-  const send = useServerFn(submitApp);
+  const sendPublic = useServerFn(submitApp);
+  const sendMine = useServerFn(submitMyApp);
+  const { session } = useAuth();
+  const send = session ? sendMine : sendPublic;
   const empty = { title: "", website_url: "", tagline: "", description: "", icon_url: "" };
   const [fields, setFields] = useState(empty);
   const [screenshots, setScreenshots] = useState<string[]>([]);
@@ -92,7 +97,7 @@ function Submit() {
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Button asChild className="rounded-md">
-            <a href="/explore">Browse the directory</a>
+            {session ? <Link to="/my-apps">Track its status</Link> : <a href="/explore">Browse the directory</a>}
           </Button>
           <Button
             variant="outline"
@@ -118,7 +123,7 @@ function Submit() {
         Tell us what you built
       </h1>
       <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-        Paste your link and let auto-fill draft the details, then check them. No account needed. Submissions stay hidden until an editor approves them.
+        Paste your link and let auto-fill draft the details, then check them. No account needed, but sign in to track its status under My apps. Submissions stay hidden until an editor approves them.
       </p>
 
       <form onSubmit={onSubmit} className="mt-10 space-y-6">

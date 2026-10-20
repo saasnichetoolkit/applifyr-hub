@@ -17,6 +17,7 @@ import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedMyAppsRouteImport } from './routes/_authenticated/my-apps'
 import { Route as AppSlugRouteImport } from './routes/app.$slug'
 import { Route as CategoryCategoryRouteImport } from './routes/category.$category'
 
@@ -59,6 +60,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMyAppsRoute = AuthenticatedMyAppsRouteImport.update({
+  id: '/my-apps',
+  path: '/my-apps',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AppSlugRoute = AppSlugRouteImport.update({
   id: '/app/$slug',
   path: '/app/$slug',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/submit': typeof SubmitRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/my-apps': typeof AuthenticatedMyAppsRoute
   '/app/$slug': typeof AppSlugRoute
   '/category/$category': typeof CategoryCategoryRoute
 }
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/submit': typeof SubmitRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/my-apps': typeof AuthenticatedMyAppsRoute
   '/app/$slug': typeof AppSlugRoute
   '/category/$category': typeof CategoryCategoryRoute
 }
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/submit': typeof SubmitRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/my-apps': typeof AuthenticatedMyAppsRoute
   '/app/$slug': typeof AppSlugRoute
   '/category/$category': typeof CategoryCategoryRoute
 }
@@ -115,6 +124,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/submit'
     | '/admin'
+    | '/my-apps'
     | '/app/$slug'
     | '/category/$category'
   fileRoutesByTo: FileRoutesByTo
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/submit'
     | '/admin'
+    | '/my-apps'
     | '/app/$slug'
     | '/category/$category'
   id:
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/submit'
     | '/_authenticated/admin'
+    | '/_authenticated/my-apps'
     | '/app/$slug'
     | '/category/$category'
   fileRoutesById: FileRoutesById
@@ -212,6 +224,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/my-apps': {
+      id: '/_authenticated/my-apps'
+      path: '/my-apps'
+      fullPath: '/my-apps'
+      preLoaderRoute: typeof AuthenticatedMyAppsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/app/$slug': {
       id: '/app/$slug'
       path: '/app/$slug'
@@ -231,10 +250,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedMyAppsRoute: typeof AuthenticatedMyAppsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedMyAppsRoute: AuthenticatedMyAppsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
