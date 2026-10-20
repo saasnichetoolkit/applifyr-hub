@@ -57,7 +57,7 @@ function MyApps() {
           </div>
         )}
         {data?.map((app) => {
-          const s = STATUS_COPY[app.status] ?? STATUS_COPY.pending!;
+          const s = STATUS_COPY[app.status] ?? STATUS_COPY["pending"]!;
           const live = app.status === "approved" || app.status === "featured";
           return (
             <div key={app.id} className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-card p-4">
