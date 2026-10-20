@@ -44,7 +44,7 @@ function SignIn() {
     claim({ data: undefined })
       .then((isAdmin) => {
         if (!active) return;
-        navigate({ to: isAdmin ? "/admin" : "/" });
+        navigate({ to: isAdmin ? "/admin" : "/my-apps" });
       })
       .catch(() => {
         if (active) navigate({ to: "/" });
